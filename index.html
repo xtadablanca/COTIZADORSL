@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador — Residencial Santa Lucía</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sl-green:#008B46; --sl-green-dark:#007A57; --sl-yellow:#F7A812;
+  --sl-orange:#B36416; --sl-gray:#DDDEDF; --pb-dark:#22285D;
+  --white:#FFFFFF; --green-bg:#f0fff6; --yellow-bg:#fffbf0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--sl-gray);min-height:100vh;}
+
+/* HEADER */
+header{background:var(--sl-green-dark);padding:16px 36px;display:flex;align-items:center;
+  justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,.2);position:relative;overflow:hidden;}
+header::before{content:'SL';position:absolute;right:-10px;top:-20px;font-family:'Montserrat',sans-serif;
+  font-weight:900;font-size:130px;color:rgba(255,255,255,.05);line-height:1;pointer-events:none;}
+.header-left{display:flex;align-items:center;gap:14px;}
+.logo-sl{width:46px;height:46px;border-radius:50%;background:var(--sl-yellow);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--sl-green-dark);}
+.header-text h1{font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:white;line-height:1.2;}
+.header-text p{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
+.header-badge{background:var(--sl-yellow);color:var(--sl-green-dark);border-radius:20px;
+  padding:5px 14px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;letter-spacing:.5px;}
+
+main{max-width:880px;margin:32px auto;padding:0 18px 60px;}
+
+/* SELECTOR */
+.selector-card{background:white;border-radius:18px;padding:26px 28px;
+  box-shadow:0 6px 28px rgba(0,0,0,.08);margin-bottom:22px;}
+.selector-card h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;
+  color:#aaa;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+
+.etapa-tabs{display:flex;gap:10px;margin-bottom:20px;}
+.etapa-tab{flex:1;border:2px solid #c8c8c8;border-radius:12px;padding:12px 16px;
+  cursor:pointer;transition:all .2s;background:#f5f5f5;text-align:left;}
+.etapa-tab:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,139,70,.18);
+  border-color:var(--sl-green);background:#edfaf3;}
+.etapa-tab:hover .et-num{color:var(--sl-green);}
+.etapa-tab:hover .et-name{color:var(--sl-green-dark);}
+.etapa-tab:hover .et-info{color:var(--sl-green-dark);}
+.etapa-tab .et-num{font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;
+  color:#aaa;line-height:1;margin-bottom:3px;transition:color .2s;}
+.etapa-tab .et-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:#555;transition:color .2s;}
+.etapa-tab .et-info{font-size:10px;color:#777;margin-top:2px;transition:color .2s;}
+.etapa-tab.active{border-color:var(--sl-green);background:linear-gradient(135deg,var(--sl-green-dark),var(--sl-green));}
+.etapa-tab.active .et-num{color:var(--sl-yellow);}
+.etapa-tab.active .et-name{color:white;}
+.etapa-tab.active .et-info{color:rgba(255,255,255,.75);}
+
+.field-wrap{display:flex;flex-direction:column;gap:6px;}
+.field-wrap label{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;
+  color:var(--pb-dark);letter-spacing:.5px;text-transform:uppercase;}
+select{width:100%;padding:11px 40px 11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;
+  font-weight:500;border:2px solid #e0e0e0;border-radius:11px;background:#fafafa;
+  color:var(--pb-dark);outline:none;cursor:pointer;transition:border-color .2s;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23008B46' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;background-size:16px;}
+select:focus{border-color:var(--sl-green);}
+
+/* CARD */
+#card-container{min-height:20px;}
+.lot-card{border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.13);animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.card-header{background:linear-gradient(135deg,var(--sl-green-dark),var(--sl-green));
+  padding:22px 28px 18px;position:relative;overflow:hidden;}
+.card-header::after{content:'';position:absolute;bottom:-20px;right:-20px;
+  width:90px;height:90px;border-radius:50%;background:var(--sl-yellow);opacity:.12;}
+.ch-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.ch-badge{background:var(--sl-yellow);color:var(--sl-green-dark);border-radius:20px;
+  padding:4px 12px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.8px;text-transform:uppercase;}
+.lote-id{font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;
+  color:white;line-height:1;letter-spacing:-1.5px;}
+.lote-id span{color:var(--sl-yellow);}
+.proj-label{font-size:11px;color:rgba(255,255,255,.5);font-weight:300;margin-top:2px;}
+
+.card-body{background:white;padding:22px 28px;}
+
+/* SPECS */
+.specs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+.spec-item{background:var(--green-bg);border-radius:10px;padding:10px 13px;border-left:3px solid var(--sl-green);}
+.spec-label{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;}
+.spec-value{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--pb-dark);}
+
+/* PRECIO */
+.precio-box{background:var(--sl-green-dark);border-radius:12px;padding:14px 18px;
+  margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.precio-left .pl{font-size:10px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}
+.precio-left .pv{font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:white;}
+.precio-edit{display:flex;align-items:center;gap:8px;}
+.precio-edit span{font-size:11px;color:rgba(255,255,255,.5);}
+.precio-edit-wrap{position:relative;}
+.precio-edit-sym{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--sl-green-dark);}
+.precio-edit-wrap input{padding:6px 10px 6px 26px;border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;
+  color:var(--sl-green-dark);width:130px;outline:none;}
+.precio-note{font-size:9px;color:rgba(255,255,255,.4);margin-top:4px;text-align:right;width:100%;}
+
+/* SEPARADOR */
+.fin-sep{border-top:2px dashed #e8e8e8;padding-top:16px;}
+.fin-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--sl-green-dark);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.fin-title::after{content:'';flex:1;height:1px;background:#e8e8e8;}
+
+/* INICIAL */
+.ini-section{background:#f7fdf9;border-radius:12px;padding:14px 16px;margin-bottom:14px;
+  border:1px solid #d4edda;}
+.ini-top-label{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;
+  color:var(--sl-green-dark);margin-bottom:10px;}
+.ini-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ini-input-wrap{position:relative;flex:1;min-width:150px;}
+.ini-sym{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--pb-dark);}
+.ini-input-wrap input{padding:11px 12px 11px 30px;width:100%;border:2px solid #e0e0e0;
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  color:var(--pb-dark);background:#fafafa;outline:none;transition:border-color .2s;}
+.ini-input-wrap input:focus{border-color:var(--sl-green);}
+input[type=number]::-webkit-inner-spin-button{opacity:.4;}
+
+.pct-pill{border-radius:9px;padding:10px 13px;font-family:'Montserrat',sans-serif;
+  font-weight:800;font-size:14px;text-align:center;min-width:60px;white-space:nowrap;}
+.pct-ok{background:var(--sl-green);color:white;}
+.pct-warn{background:#e65100;color:white;}
+.pct-neutral{background:#e0e0e0;color:#aaa;}
+
+.ini-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;
+  font-size:10px;font-weight:600;margin-top:8px;}
+.ini-tag.ok{background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7;}
+.ini-tag.warn{background:#fff3e0;color:#e65100;border:1.5px solid #ffcc80;}
+
+/* FRACCIONAR */
+.frac-wrap{margin-top:10px;background:white;border-radius:9px;padding:11px 13px;border:1px solid #e8e8e8;}
+.frac-label{font-size:11px;color:#888;margin-bottom:7px;}
+.frac-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.frac-btn{padding:5px 10px;border-radius:7px;border:1.5px solid #ddd;
+  font-family:'Montserrat',sans-serif;font-weight:600;font-size:11px;
+  cursor:pointer;background:white;color:#999;transition:all .15s;}
+.frac-btn:hover{border-color:var(--sl-green);color:var(--sl-green);}
+.frac-btn.sel{background:var(--sl-green);border-color:var(--sl-green);color:white;}
+.frac-result{display:flex;justify-content:space-between;align-items:center;
+  background:#f7fdf9;border-radius:7px;padding:7px 11px;margin-top:6px;}
+.frac-result .fl{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.6px;}
+.frac-result .fv{font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:var(--pb-dark);}
+
+/* SALDO */
+.saldo-bar{background:var(--sl-green-dark);border-radius:10px;padding:10px 15px;
+  display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.saldo-bar .sl{font-size:10px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px;}
+.saldo-bar .sv{font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:white;}
+
+/* PLAN */
+.plan-card{background:var(--green-bg);border:2px solid #a5d6a7;border-radius:13px;
+  padding:16px 18px;margin-top:14px;}
+.plan-badge{display:inline-block;background:#a5d6a7;color:#1b5e20;border-radius:20px;
+  padding:3px 11px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;
+  letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;}
+.plan-cuotas-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.plan-cuotas-row label{font-size:11px;color:#666;white-space:nowrap;}
+.plan-cuotas-row input{width:72px;padding:6px 10px;font-family:'Montserrat',sans-serif;
+  font-weight:700;font-size:14px;border:1.5px solid #a5d6a7;border-radius:8px;
+  background:white;color:var(--pb-dark);outline:none;text-align:center;}
+.plan-cuotas-row input:focus{border-color:var(--sl-green);}
+.plan-cuotas-row .max-hint{font-size:9px;color:#aaa;}
+.cuota-result{text-align:center;margin-top:6px;}
+.cuota-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;}
+.cuota-val{font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:var(--sl-green-dark);}
+.cuota-sub{font-size:10px;color:#888;margin-top:2px;}
+
+.aviso{background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;
+  padding:10px 14px;font-size:11px;color:#e65100;margin-top:10px;font-weight:500;}
+
+/* TABLA REFERENCIA */
+.ref-table{background:#f7fdf9;border-radius:13px;padding:14px 16px;margin-top:16px;
+  border:1px solid #d4edda;}
+.ref-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;
+  letter-spacing:1px;text-transform:uppercase;color:var(--sl-green-dark);margin-bottom:10px;}
+.ref-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.ref-item{background:white;border-radius:9px;padding:8px 5px;text-align:center;
+  border-top:3px solid var(--sl-green);}
+.ref-pct{font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--sl-green-dark);}
+.ref-monto{font-size:10px;color:#666;margin-top:2px;}
+
+/* EXPORT */
+.export-bar{text-align:center;margin-top:20px;}
+.btn-export{background:var(--sl-green-dark);color:white;border:none;border-radius:13px;
+  padding:13px 30px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 6px 20px rgba(0,139,70,.3);}
+.btn-export:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,139,70,.4);}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:40px 20px;color:#ccc;}
+.empty-state svg{opacity:.3;margin-bottom:12px;}
+.empty-state p{font-size:14px;}
+
+footer{text-align:center;font-size:11px;color:#888;margin-top:36px;letter-spacing:.4px;}
+footer strong{color:var(--sl-green-dark);}
+
+@media(max-width:560px){
+  header{padding:12px 18px;}
+  main{margin:14px auto;}
+  .selector-card{padding:18px;}
+  .etapa-tabs{flex-direction:column;}
+  .card-body{padding:18px;}
+  .ref-grid{grid-template-columns:repeat(5,1fr);gap:4px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-sl">SL</div>
+    <div class="header-text">
+      <h1>Residencial Santa Lucía</h1>
+      <p>Portada Blanca Constructora &amp; Inmobiliaria · Ferreñafe</p>
+    </div>
+  </div>
+  <div class="header-badge">COTIZADOR</div>
+</header>
+
+<main>
+  <div class="selector-card">
+    <h2>Selecciona Etapa y Lote</h2>
+    <div class="etapa-tabs">
+      <div class="etapa-tab" id="tab-e1" onclick="selectEtapa(1)">
+        <div class="et-num">1</div>
+        <div class="et-name">Primera Etapa</div>
+        <div class="et-info">Inicial mín. S/ 3,000 · Inicial en hasta 2 cuotas · Financ. hasta 48 meses</div>
+      </div>
+      <div class="etapa-tab" id="tab-e2" onclick="selectEtapa(2)">
+        <div class="et-num">2</div>
+        <div class="et-name">Segunda Etapa</div>
+        <div class="et-info">Inicial mín. S/ 4,050 · Inicial en hasta 3 cuotas · Financ. hasta 60 meses</div>
+      </div>
+    </div>
+    <div class="field-wrap">
+      <label>Lote</label>
+      <select id="lot-select" onchange="onLotChange()">
+        <option value="">— Selecciona un lote —</option>
+      </select>
+    </div>
+    <div class="field-wrap" style="margin-top:12px;">
+      <label>Asesor Inmobiliario</label>
+      <select id="vendedor-select">
+        <option value="">— Selecciona el asesor —</option>
+        <option value="CHERO GASTULO JULIO ABEL|74389142|932 475 864">Chero Gastulo Julio Abel</option>
+        <option value="LLAQUE RACCHUMI DIANIRA PAOLA|71326433|957 049 853">Llaque Racchumi Dianira Paola</option>
+        <option value="ROQUE VILCABANA NILTON CARLOS|45315635|964 305 776">Roque Vilcabana Nilton Carlos</option>
+        <option value="YAMPUFÉ FIGUEROA FATIMA|75226399|913 950 847">Yampufé Figueroa Fatima</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="card-container">
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <p>Elige una etapa y un lote para ver su cotización</p>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Portada Blanca Constructora &amp; Inmobiliaria</strong> · RUC: 20611225645<br>
+    Oficina Chiclayo: Calle María Izaga 778 · Oficina Ferreñafe: Calle Bolívar 306<br>
+    932 543 587 / 932 475 864
+  </footer>
+</main>
+
+<script>
+// ── DATA ──
+const LOTS = {
+  1: [
+    {id:"A2", ubi:"Calle",  m2:60, precio:75894},
+    {id:"A3", ubi:"Calle",  m2:60, precio:75894},
+    {id:"A4", ubi:"Calle",  m2:60, precio:75894},
+    {id:"A6", ubi:"Calle",  m2:60, precio:75894},
+    {id:"A7", ubi:"Calle",  m2:60, precio:75894},
+    {id:"A9", ubi:"Calle",  m2:60, precio:75894},
+    {id:"A10",ubi:"Calle",  m2:60, precio:75894},
+    {id:"B3", ubi:"Calle",  m2:60, precio:75894},
+    {id:"B4", ubi:"Calle",  m2:60, precio:75894},
+    {id:"B5", ubi:"Calle",  m2:60, precio:75894},
+    {id:"C7", ubi:"Calle",  m2:65, precio:77123},
+    {id:"C8", ubi:"Calle",  m2:65, precio:77123},
+    {id:"D3", ubi:"Calle",  m2:60, precio:75894},
+    {id:"D4", ubi:"Calle",  m2:60, precio:75894},
+    {id:"D7", ubi:"Calle",  m2:60, precio:75894},
+    {id:"D9", ubi:"Calle",  m2:60, precio:75894},
+    {id:"D10",ubi:"Calle",  m2:60, precio:75894},
+    {id:"E5", ubi:"Calle",  m2:60, precio:77474},
+    {id:"E7", ubi:"Calle",  m2:60, precio:77474},
+    {id:"E9", ubi:"Calle",  m2:60, precio:77474},
+    {id:"E13",ubi:"Calle",  m2:60, precio:77474},
+  ],
+  2: [
+    {id:"A1", ubi:"Esquina F/Parque",  m2:72, precio:102240},
+    {id:"A2", ubi:"Calle/Pasaje",      m2:60, precio:84720},
+    {id:"A3", ubi:"Calle/Pasaje",      m2:60, precio:84720},
+    {id:"A4", ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A5", ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A6", ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A7", ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A8", ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A9", ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A10",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A11",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A12",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A13",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A14",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A15",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A16",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A17",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"A20",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A21",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A22",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A23",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A24",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A25",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A26",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A27",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A28",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A29",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A30",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A31",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A32",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A33",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A34",ubi:"Calle",             m2:60, precio:84000},
+    {id:"A35",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B1", ubi:"Esquina F/Parque",  m2:60, precio:85800},
+    {id:"B2", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B3", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B4", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B5", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B6", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B7", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B8", ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"B9", ubi:"Calle/Pasaje",      m2:60, precio:85200},
+    {id:"B10",ubi:"Calle/Pasaje",      m2:60, precio:84720},
+    {id:"B11",ubi:"Calle/Pasaje",      m2:60, precio:84720},
+    {id:"B12",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B13",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B14",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B15",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B16",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B17",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B18",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B19",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"B20",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B21",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B22",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B23",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B24",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B25",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B26",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B27",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B28",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B29",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B30",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B31",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B32",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B33",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B34",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B35",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B36",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B37",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B38",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B39",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B40",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B41",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B42",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B43",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B44",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B45",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B46",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B47",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B48",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B49",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B50",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B51",ubi:"Calle",             m2:60, precio:84000},
+    {id:"B52",ubi:"Esquina",           m2:60, precio:85200},
+    {id:"C2", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C3", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C4", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C5", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C6", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C7", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C8", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C9", ubi:"Calle",             m2:60, precio:84000},
+    {id:"C10",ubi:"Esquina/Pasaje",    m2:60, precio:85200},
+    {id:"C11",ubi:"Esquina F/Parque",  m2:60, precio:85800},
+    {id:"C12",ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"C13",ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"C14",ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"C15",ubi:"F/Parque",          m2:60, precio:85200},
+    {id:"C16",ubi:"Calle/Pasaje",      m2:60, precio:85200},
+    {id:"C17",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"C18",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+    {id:"C19",ubi:"Calle/Pasaje",      m2:60, precio:84000},
+  ]
+};
+
+// Reglas por etapa
+const REGLAS = {
+  1: {iniMin:3000, maxFrac:2, maxCuotas:48},
+  2: {iniMin:4050, maxFrac:3, maxCuotas:60}
+};
+
+// Estado
+let activeEtapa = null;
+let ST = {inicialMonto:0, fracCuotas:1, cuotas:0, precioCustom:0};
+
+function fmt(n){return Number(n).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtInt(n){return Math.round(n).toLocaleString('es-PE');}
+function precioBase(lot){return lot.precio;}
+function precio(lot){return ST.precioCustom>0?ST.precioCustom:precioBase(lot);}
+
+// Fechas PDF
+function fmtFecha(d){
+  const M=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  return`${d.getDate()} de ${M[d.getMonth()]} de ${d.getFullYear()}`;
+}
+function calcValidez(){
+  const hoy=new Date(); const vence=new Date(hoy); vence.setDate(hoy.getDate()+4);
+  const ultimoDia=new Date(hoy.getFullYear(),hoy.getMonth()+1,0).getDate();
+  const esFin=(ultimoDia-hoy.getDate())<=3;
+  return{hoy,vence,esFin};
+}
+
+function selectEtapa(e){
+  activeEtapa=e; ST={inicialMonto:0,fracCuotas:1,cuotas:0,precioCustom:0};
+  document.getElementById('tab-e1').className='etapa-tab'+(e===1?' active':'');
+  document.getElementById('tab-e2').className='etapa-tab'+(e===2?' active':'');
+  const sel=document.getElementById('lot-select');
+  sel.innerHTML='<option value="">— Selecciona un lote —</option>';
+  LOTS[e].forEach(l=>{
+    const o=document.createElement('option');
+    o.value=l.id;
+    o.textContent=`Lote ${l.id} · ${l.ubi} · ${l.m2}m² · S/ ${fmtInt(l.precio)}`;
+    sel.appendChild(o);
+  });
+  document.getElementById('card-container').innerHTML=`
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 12h6M12 9v6"/>
+      </svg><p>Selecciona un lote del desplegable</p></div>`;
+}
+
+function onLotChange(){
+  if(!activeEtapa) return;
+  const lotId=document.getElementById('lot-select').value; if(!lotId) return;
+  ST={inicialMonto:0,fracCuotas:1,cuotas:0,precioCustom:0};
+  renderCard();
+}
+
+function onInicialInput(v){ST.inicialMonto=parseFloat(v)||0; updateCalc();}
+function onPrecioInput(v){
+  if(!activeEtapa) return;
+  const lotId=document.getElementById('lot-select').value; if(!lotId) return;
+  const lot=LOTS[activeEtapa].find(l=>l.id===lotId); if(!lot) return;
+  ST.precioCustom=parseFloat(v)||0;
+  const disp=document.getElementById('precio-display');
+  if(disp) disp.textContent=`S/ ${fmt(ST.precioCustom||precioBase(lot))}`;
+  updateCalc();
+}
+function setFrac(n){ST.fracCuotas=n; updateCalc();}
+function onCuotasInput(v){ST.cuotas=parseInt(v)||0; updateCalc();}
+
+function updateCalc(){
+  if(!activeEtapa) return;
+  const lotId=document.getElementById('lot-select').value; if(!lotId) return;
+  const lot=LOTS[activeEtapa].find(l=>l.id===lotId); if(!lot) return;
+  const regla=REGLAS[activeEtapa];
+  const p=precio(lot);
+  const BONO=47850;
+  const ini=ST.inicialMonto;
+  const saldo=Math.max(0,p-BONO-ini);
+  const cuota=ST.cuotas>0&&saldo>0?saldo/ST.cuotas:0;
+  const g=id=>document.getElementById(id);
+
+  // tag inicial
+  const tag=g('ini-tag');
+  if(tag){
+    if(ini===0){tag.style.display='none';}
+    else if(ini<regla.iniMin){
+      tag.style.display='';tag.className='ini-tag warn';
+      tag.textContent=`⚠️ Inicial mínima: S/ ${fmtInt(regla.iniMin)}`;
+    } else {
+      tag.style.display='';tag.className='ini-tag ok';
+      tag.textContent=`✅ Inicial válida`;
+    }
+  }
+
+  // fraccionar
+  const fw=g('frac-wrap');
+  if(fw){
+    if(ini>=regla.iniMin){
+      fw.style.display='';
+      for(let n=1;n<=3;n++){
+        const b=g(`fb-${n}`);
+        if(b){
+          b.style.display=n<=regla.maxFrac?'':'none';
+          b.className='frac-btn'+(ST.fracCuotas===n?' sel':'');
+        }
+      }
+      const fr=g('frac-result');
+      if(fr){
+        if(ST.fracCuotas>=2){fr.style.display='flex';const fv=fr.querySelector('.fv');if(fv)fv.textContent=`S/ ${fmt(ini/ST.fracCuotas)} × ${ST.fracCuotas}`;}
+        else fr.style.display='none';
+      }
+    } else fw.style.display='none';
+  }
+
+  // saldo (precio - bono - inicial)
+  const sb=g('saldo-bar');
+  if(sb){
+    if(ini>=regla.iniMin){
+      sb.style.display='flex';
+      const sv=sb.querySelector('.sv');if(sv)sv.textContent=`S/ ${fmt(saldo)}`;
+    } else sb.style.display='none';
+  }
+
+  // plan
+  const pw=g('plan-wrap'),av=g('plan-aviso');
+  if(ini>=regla.iniMin&&saldo>0){
+    if(pw)pw.style.display='';if(av)av.style.display='none';
+    const ci=g('cuotas-input');if(ci)ci.max=regla.maxCuotas;
+    const ch=g('cuotas-hint');if(ch)ch.textContent=`máx. ${regla.maxCuotas}`;
+    const cv=g('cuota-val');if(cv)cv.textContent=ST.cuotas>0?`S/ ${fmt(cuota)}`:'—';
+    const cs=g('cuota-sub');
+    if(cs) cs.textContent=ST.cuotas>0?`${ST.cuotas} cuotas sin interés`:'Ingresa número de cuotas';
+    const tc=g('total-info');
+    if(tc) tc.textContent=`Total financiamiento: ${ST.cuotas} meses (máx. ${regla.maxCuotas})`;
+  } else {
+    if(pw)pw.style.display='none';
+    if(av){
+      if(ini>0&&ini<regla.iniMin){av.style.display='';av.textContent=`⚠️ La inicial mínima es S/ ${fmtInt(regla.iniMin)}`;}
+      else av.style.display='none';
+    }
+  }
+
+  // tabla de referencia de cuotas mensuales
+  const rg=g('ref-grid');
+  if(rg){
+    const mesesOpciones = activeEtapa===1 ? [12,24,36,48] : [12,24,36,48,60];
+    if(saldo>0){
+      rg.innerHTML=mesesOpciones.map(m=>`
+        <div class="ref-item">
+          <div class="ref-pct">${m}m</div>
+          <div class="ref-monto">S/ ${fmtInt(saldo/m)}<span style="font-size:8px;color:#aaa;">/mes</span></div>
+        </div>`).join('');
+    } else {
+      rg.innerHTML=`<div style="grid-column:1/-1;text-align:center;font-size:11px;color:#aaa;padding:8px;">Ingresa una inicial válida para ver la referencia de cuotas</div>`;
+    }
+  }
+}
+
+function renderCard(){
+  if(!activeEtapa) return;
+  const lotId=document.getElementById('lot-select').value; if(!lotId) return;
+  const lot=LOTS[activeEtapa].find(l=>l.id===lotId); if(!lot) return;
+  const regla=REGLAS[activeEtapa];
+  const p=precio(lot);
+
+  const fracBtns=[1,2,3].map(n=>`
+    <button id="fb-${n}" class="frac-btn" onclick="setFrac(${n})" style="display:${n<=regla.maxFrac?'':'none'}">
+      ${n} cuota${n>1?'s':''}
+    </button>`).join('');
+
+  const html=`
+  <div class="lot-card">
+    <div class="card-header">
+      <div class="ch-top">
+        <div class="ch-badge">Etapa ${activeEtapa} · Ferreñafe</div>
+      </div>
+      <div class="lote-id">Lote <span>${lot.id}</span></div>
+      <div class="proj-label">Residencial Santa Lucía</div>
+    </div>
+    <div class="card-body">
+      <!-- SPECS GRID -->
+      <div class="specs-grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr));">
+        <div class="spec-item"><div class="spec-label">Área del lote</div><div class="spec-value">${lot.m2} m²</div></div>
+        <div class="spec-item"><div class="spec-label">Casa construida</div><div class="spec-value">27.75 m²</div></div>
+        <div class="spec-item"><div class="spec-label">Ubicación</div><div class="spec-value" style="font-size:12px;">${lot.ubi}</div></div>
+        <div class="spec-item"><div class="spec-label">Etapa</div><div class="spec-value">${activeEtapa}°</div></div>
+        <div class="spec-item"><div class="spec-label">Financiamiento</div><div class="spec-value">0% interés</div></div>
+      </div>
+
+
+      <!-- PRECIO -->
+      <div class="precio-box">
+        <div class="precio-left">
+          <div class="pl">Precio al contado · Soles</div>
+          <div class="pv">S/ ${fmt(p)}</div>
+        </div>
+      </div>
+
+      <!-- BONO HABITACIONAL -->
+      <div style="background:var(--sl-yellow);border-radius:12px;padding:12px 18px;
+        display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;
+            color:var(--sl-green-dark);letter-spacing:.5px;">🏠 BONO HABITACIONAL DEL ESTADO</div>
+          <div style="font-size:10px;color:var(--sl-orange);font-weight:600;margin-top:2px;">NO REEMBOLSABLE</div>
+        </div>
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:var(--sl-green-dark);">
+          S/ 47,850
+        </div>
+      </div>
+
+      <!-- FINANCIAMIENTO -->
+      <div class="fin-sep">
+        <div class="fin-title">Estructura de Pago</div>
+
+        <div class="ini-section">
+          <div class="ini-top-label">💰 Cuota Inicial</div>
+          <div class="ini-row">
+            <div class="ini-input-wrap">
+              <span class="ini-sym">S/</span>
+              <input type="number" id="ini-field" value="" min="0" step="1"
+                oninput="onInicialInput(this.value)" placeholder="Mínimo S/ ${fmtInt(regla.iniMin)}"/>
+            </div>
+            <div id="ini-pct" class="pct-pill pct-neutral">—</div>
+          </div>
+          <div id="ini-tag" class="ini-tag" style="display:none;"></div>
+          <div id="frac-wrap" class="frac-wrap" style="display:none;">
+            <div class="frac-label">Fraccionar inicial en:</div>
+            <div class="frac-btns">${fracBtns}</div>
+            <div id="frac-result" class="frac-result" style="display:none;">
+              <span class="fl">Cuota de inicial</span><span class="fv"></span>
+            </div>
+          </div>
+          <div id="saldo-bar" class="saldo-bar" style="display:none;">
+            <span class="sl">Saldo a financiar (precio − bono − inicial)</span><span class="sv"></span>
+          </div>
+        </div>
+
+        <div id="plan-aviso" class="aviso" style="display:none;"></div>
+        <div id="plan-wrap" style="display:none;">
+          <div class="plan-card">
+            <div class="plan-badge">✅ Sin Interés</div>
+            <div class="plan-cuotas-row">
+              <label>Cuotas mensuales:</label>
+              <input id="cuotas-input" type="number" min="0" max="${regla.maxCuotas}"
+                value="0" oninput="onCuotasInput(this.value)">
+              <span id="cuotas-hint" class="max-hint">máx. ${regla.maxCuotas}</span>
+            </div>
+            <div class="cuota-result">
+              <div class="cuota-lbl">Cuota mensual</div>
+              <div id="cuota-val" class="cuota-val">—</div>
+              <div id="cuota-sub" class="cuota-sub">Ingresa número de cuotas</div>
+            </div>
+          </div>
+          <div id="total-info" style="text-align:right;font-size:10px;color:#aaa;margin-top:6px;"></div>
+        </div>
+
+        <!-- REFERENCIA CUOTAS -->
+        <div class="ref-table" style="margin-top:14px;">
+          <div class="ref-title">📊 Referencia de cuotas según plazo (sobre el saldo)</div>
+          <div id="ref-grid" class="ref-grid" style="grid-template-columns:repeat(${activeEtapa===1?4:5},1fr);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="export-bar">
+    <button class="btn-export" onclick="exportPDF()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Exportar Cotización PDF
+    </button>
+  </div>`;
+
+  document.getElementById('card-container').innerHTML=html;
+
+  // Badge % en input de inicial
+  const iniInput=document.getElementById('ini-field');
+  if(iniInput){
+    iniInput.addEventListener('input',function(){
+      const p2=precioBase(LOTS[activeEtapa].find(l=>l.id===lotId));
+      const val=parseFloat(this.value)||0;
+      const pill=document.getElementById('ini-pct');
+      if(pill){
+        if(val===0){pill.textContent='—';pill.className='pct-pill pct-neutral';}
+        else{const pct=(val/p2*100).toFixed(1);pill.textContent=pct+'%';
+          pill.className='pct-pill '+(val>=REGLAS[activeEtapa].iniMin?'pct-ok':'pct-warn');}
+      }
+    });
+  }
+  updateCalc();
+}
+
+// ── EXPORTAR PDF ──
+function exportPDF(){
+  if(!activeEtapa) return;
+  const lotId=document.getElementById('lot-select').value; if(!lotId) return;
+  const lot=LOTS[activeEtapa].find(l=>l.id===lotId); if(!lot) return;
+  const regla=REGLAS[activeEtapa];
+  const p=precio(lot);
+  const BONO=47850;
+  const ini=ST.inicialMonto;
+  const saldo=Math.max(0,p-BONO-ini);
+  const cuota=ST.cuotas>0&&saldo>0?saldo/ST.cuotas:0;
+  const {hoy,vence,esFin}=calcValidez();
+  const mesesOpciones=activeEtapa===1?[12,24,36,48]:[12,24,36,48,60];
+
+  // vendedor
+  const vendedorRaw=document.getElementById('vendedor-select').value;
+  const [vendNombre='',vendDNI='',vendCel=''] = vendedorRaw?vendedorRaw.split('|'):[];
+
+  const cuotaIniStr=ST.fracCuotas>=2
+    ?`S/ ${fmt(ini/ST.fracCuotas)} &times; ${ST.fracCuotas} cuotas`
+    :`S/ ${fmt(ini)} <span style="font-size:10px;color:#888;">(pago único)</span>`;
+
+  const astHtml=esFin?`
+    <div style="background:#fff3e0;border:1px solid #ffcc80;border-radius:7px;padding:7px 12px;
+      font-size:9px;color:#e65100;margin-top:10px;line-height:1.6;">
+      * Los beneficios y promociones son válidos únicamente en el mes en curso.
+      Los precios podrían variar a partir del 1° del mes siguiente.
+    </div>`:'';
+
+  const pagosHtml=ini>=regla.iniMin?`
+    <div class="sec">Estructura de Pago</div>
+    <div style="background:#f5f5f5;border-radius:6px;padding:6px 10px;
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span style="font-size:10px;color:#666;">💰 Cuota Inicial (${(ini/p*100).toFixed(1)}%)</span>
+      <span style="font-family:Arial,sans-serif;font-weight:700;font-size:12px;color:#22285D;">${cuotaIniStr}</span>
+    </div>
+    ${ST.fracCuotas>=2?`<div style="font-size:8px;color:#aaa;text-align:right;margin-bottom:3px;">
+      Fraccionado en ${ST.fracCuotas} cuotas de S/ ${fmt(ini/ST.fracCuotas)} c/u</div>`:''}
+    <div style="background:#007A57;border-radius:6px;padding:6px 10px;
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <span style="font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;">Saldo a Financiar (precio &minus; bono &minus; inicial)</span>
+      <span style="font-family:Arial,sans-serif;font-weight:900;font-size:14px;color:white;">S/ ${fmt(saldo)}</span>
+    </div>
+    ${ST.cuotas>0?`
+    <div style="background:#f0fff6;border:1.5px solid #a5d6a7;border-radius:7px;padding:8px 12px;margin-bottom:4px;">
+      <div style="font-family:Arial,sans-serif;font-weight:700;font-size:8px;letter-spacing:.8px;
+        text-transform:uppercase;color:#1b5e20;background:#a5d6a7;border-radius:20px;
+        display:inline-block;padding:2px 8px;margin-bottom:6px;">SIN INTERES</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px;">Cuota mensual</div>
+          <div style="font-family:Arial,sans-serif;font-weight:900;font-size:22px;color:#007A57;">S/ ${fmt(cuota)}</div>
+          <div style="font-size:9px;color:#888;margin-top:1px;">${ST.cuotas} cuotas sin interés</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:8px;color:#888;">Total financiado</div>
+          <div style="font-family:Arial,sans-serif;font-weight:700;font-size:12px;color:#22285D;">S/ ${fmt(saldo)}</div>
+          <div style="font-size:8px;color:#aaa;">máx. ${regla.maxCuotas} meses</div>
+        </div>
+      </div>
+    </div>`:''}
+    <div style="font-size:8px;color:#bbb;text-align:right;">Total financiamiento: ${ST.cuotas} meses</div>
+  `:'';
+
+  const fullHTML=`<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<title>Cotizacion Lote ${lot.id} - Santa Lucia</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{font-family:Arial,sans-serif;background:white;color:#22285D;padding:10px 14px;font-size:11px;line-height:1.4;}
+  .sec{font-family:Arial,sans-serif;font-weight:700;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;
+    color:#007A57;margin:8px 0 5px;display:flex;align-items:center;gap:6px;}
+  .sec::after{content:'';flex:1;height:1px;background:#ddd;}
+  .dash{border-top:1.5px dashed #ddd;margin:8px 0;}
+  @media print{
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
+    body{padding:4px 8px;font-size:10px;}
+    @page{size:A4 portrait;margin:5mm 6mm;}
+    .no-print{display:none;}
+  }
+</style></head><body>
+
+<!-- HEADER -->
+<div style="display:flex;justify-content:space-between;align-items:flex-start;
+  padding-bottom:8px;border-bottom:2.5px solid #007A57;margin-bottom:8px;">
+  <div>
+    <div style="font-family:Arial,sans-serif;font-weight:900;font-size:14px;color:#007A57;line-height:1.2;">
+      PORTADA BLANCA CONSTRUCTORA &amp; INMOBILIARIA
+    </div>
+    <div style="font-size:9px;color:#888;margin-top:1px;">RUC: 20611225645 &middot; "La puerta de ingreso a tu felicidad"</div>
+  </div>
+  <div style="text-align:right;font-size:9px;color:#888;line-height:1.7;flex-shrink:0;">
+    <div style="font-family:Arial,sans-serif;font-weight:700;font-size:11px;color:#22285D;">COTIZACION DE LOTE</div>
+    Fecha: ${fmtFecha(hoy)}<br>Moneda: Soles (S/)
+  </div>
+</div>
+
+<!-- BARRA PROYECTO -->
+<div style="background:linear-gradient(135deg,#007A57,#008B46);border-radius:8px;
+  padding:8px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+  <span style="font-family:Arial,sans-serif;font-weight:900;font-size:12px;color:white;letter-spacing:.3px;">
+    RESIDENCIAL SANTA LUCÍA — FERREÑAFE &nbsp;·&nbsp; ETAPA ${activeEtapa}
+  </span>
+  <span style="background:#F7A812;color:#007A57;border-radius:20px;padding:3px 12px;
+    font-family:Arial,sans-serif;font-weight:700;font-size:10px;white-space:nowrap;">
+    LOTE ${lot.id}
+  </span>
+</div>
+
+<!-- SPECS -->
+<div class="sec">Especificaciones</div>
+<div style="font-size:9px;color:#555;margin-bottom:5px;">📍 ${lot.ubi}</div>
+<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
+  ${[
+    ['Área del lote', lot.m2+' m²', '#f5f5f5', '#22285D'],
+    ['Casa construida', '27.75 m²', '#f5f5f5', '#22285D'],
+    ['Etapa', activeEtapa+'° Etapa', '#f5f5f5', '#22285D'],
+    ['Financiamiento', '0% interés', '#f5f5f5', '#22285D'],
+    ['Precio al Contado', 'S/ '+fmt(p), '#007A57', 'white'],
+  ].map(([lbl,val,bg,col])=>`
+  <div style="background:${bg};border-radius:6px;padding:6px 10px;flex:1;min-width:70px;">
+    <div style="font-size:7px;text-transform:uppercase;letter-spacing:.7px;color:${bg==='#007A57'?'rgba(255,255,255,.6)':'#999'};margin-bottom:2px;">${lbl}</div>
+    <div style="font-family:Arial,sans-serif;font-weight:700;font-size:13px;color:${col};">${val}</div>
+  </div>`).join('')}
+</div>
+
+<!-- CARACTERÍSTICAS -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:7px;">
+  ${['🛋️ Sala + Comedor + Cocina','🛏️ 2 Habitaciones','🚿 Baño completo','🔌 Luz / Agua / Desagüe',
+     '🏗️ Área de ampliación','🧺 Patio lavandería','🏠 Bases para 2 pisos','🧱 Paredes independientes']
+    .map(f=>`<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;
+      padding:5px 6px;font-size:8px;font-weight:600;color:#2e7d32;text-align:center;">${f}</div>`).join('')}
+</div>
+
+<!-- BONO -->
+<div style="background:#F7A812;border-radius:7px;padding:8px 14px;margin-bottom:7px;
+  display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <div style="font-family:Arial,sans-serif;font-weight:800;font-size:10px;color:#007A57;letter-spacing:.3px;">
+      🏠 BONO HABITACIONAL DEL ESTADO
+    </div>
+    <div style="font-size:8px;color:#B36416;font-weight:600;margin-top:1px;">NO REEMBOLSABLE</div>
+  </div>
+  <div style="font-family:Arial,sans-serif;font-weight:900;font-size:16px;color:#007A57;">S/ 47,850</div>
+</div>
+
+<div class="dash"></div>
+
+${pagosHtml}
+
+<!-- CUENTAS BANCARIAS -->
+<div class="dash"></div>
+<div class="sec">Cuenta Bancaria · Residencial Santa Lucía</div>
+<div style="background:#f5f5f5;border-radius:7px;padding:10px 14px;border-left:4px solid #0066cc;margin-bottom:6px;">
+  <div style="font-family:Arial,sans-serif;font-weight:700;font-size:10px;color:#0066cc;margin-bottom:8px;">🏦 BCP — Cuenta en Soles</div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;">
+    <div>
+      <div style="font-size:8px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Número de Cuenta</div>
+      <div style="font-family:Arial,sans-serif;font-weight:900;font-size:17px;color:#22285D;letter-spacing:2.5px;">3057065011054</div>
+    </div>
+    <div>
+      <div style="font-size:8px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Código Interbancario (CCI)</div>
+      <div style="font-family:Arial,sans-serif;font-weight:900;font-size:17px;color:#22285D;letter-spacing:2.5px;">00230500706501105410</div>
+    </div>
+  </div>
+</div>
+<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:7px;padding:8px 14px;margin-bottom:8px;">
+  <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;">A nombre de</div>
+  <div style="font-family:Arial,sans-serif;font-weight:900;font-size:12px;color:#007A57;letter-spacing:.3px;">PORTADA BLANCA CONSTRUCTORA &amp; INMOBILIARIA</div>
+  <div style="font-family:Arial,sans-serif;font-weight:700;font-size:10px;color:#555;margin-top:2px;">RUC: 20611225645</div>
+</div>
+
+<!-- FOOTER -->
+<div style="padding-top:7px;border-top:1.5px solid #eee;
+  display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px;">
+  <div style="font-size:8px;color:#888;line-height:1.8;">
+    <div style="font-family:Arial,sans-serif;font-weight:700;font-size:9px;color:#22285D;">Portada Blanca Constructora &amp; Inmobiliaria</div>
+    <div>Oficina Chiclayo: Calle Mar&iacute;a Izaga 778</div>
+    <div>Oficina Ferre&ntilde;afe: Calle Bol&iacute;var 306</div>
+    <div>📞 932 543 587 &nbsp;/&nbsp; 932 475 864</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+    ${vendNombre ? `
+    <div style="font-size:8px;color:#888;text-align:right;font-style:italic;margin-bottom:1px;">
+      Si tiene alguna consulta, cont&aacute;ctese con:
+    </div>
+    <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:7px;padding:8px 14px;text-align:right;">
+      <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Asesor Inmobiliario</div>
+      <div style="font-family:Arial,sans-serif;font-weight:700;font-size:11px;color:#007A57;margin-bottom:5px;">${vendNombre}</div>
+      <div style="font-family:Arial,sans-serif;font-weight:900;font-size:17px;color:#22285D;">📞 ${vendCel}</div>
+    </div>` : ''}
+    <div style="background:#f5f5f5;border-radius:7px;padding:6px 14px;text-align:center;">
+      <div style="font-size:8px;color:#aaa;text-transform:uppercase;letter-spacing:.6px;">Cotizacion valida hasta</div>
+      <div style="font-family:Arial,sans-serif;font-weight:800;font-size:12px;color:#22285D;margin-top:1px;">${fmtFecha(vence)}</div>
+    </div>
+  </div>
+</div>
+${astHtml}
+
+<div class="no-print" style="text-align:center;margin-top:16px;">
+  <button onclick="window.print()" style="background:#008B46;color:white;border:none;border-radius:8px;
+    padding:10px 24px;font-family:Arial,sans-serif;font-weight:700;font-size:13px;cursor:pointer;">
+    Guardar como PDF (Ctrl+P)
+  </button>
+  <p style="font-size:10px;color:#aaa;margin-top:6px;">Selecciona "Guardar como PDF" en el di&aacute;logo de impresi&oacute;n</p>
+</div>
+</body></html>`;
+
+  const win=window.open('','_blank');
+  win.document.write(fullHTML);
+  win.document.close();
+  setTimeout(()=>win.print(),800);
+}
+</script>
+</body>
+</html>
