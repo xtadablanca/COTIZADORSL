@@ -235,12 +235,12 @@ footer strong{color:var(--sl-green-dark);}
       <div class="etapa-tab" id="tab-e1" onclick="selectEtapa(1)">
         <div class="et-num">1</div>
         <div class="et-name">Primera Etapa</div>
-        <div class="et-info">Inicial mín. S/ 3,000 · Inicial en hasta 2 cuotas · Financ. hasta 48 meses</div>
+        <div class="et-info">Sin inicial (o la que desee) · Financiamiento hasta 48 meses SIN interés</div>
       </div>
       <div class="etapa-tab" id="tab-e2" onclick="selectEtapa(2)">
         <div class="et-num">2</div>
         <div class="et-name">Segunda Etapa</div>
-        <div class="et-info">Inicial mín. S/ 4,050 · Inicial en hasta 3 cuotas · Financ. hasta 60 meses</div>
+        <div class="et-info">Sin inicial (o la que desee) · Financiamiento hasta 60 meses SIN interés</div>
       </div>
     </div>
     <div class="field-wrap">
@@ -411,10 +411,10 @@ const LOTS = {
   ]
 };
 
-// Reglas por etapa
+// Reglas por etapa — inicial desde 0 (sin mínimo); financiamiento sin interés
 const REGLAS = {
-  1: {iniMin:3000, maxFrac:2, maxCuotas:48},
-  2: {iniMin:4050, maxFrac:3, maxCuotas:60}
+  1: {iniMin:0, maxFrac:2, maxCuotas:48},
+  2: {iniMin:0, maxFrac:3, maxCuotas:60}
 };
 
 // Estado
@@ -475,7 +475,12 @@ function onPrecioInput(v){
   updateCalc();
 }
 function setFrac(n){ST.fracCuotas=n; updateCalc();}
-function onCuotasInput(v){ST.cuotas=parseInt(v)||0; updateCalc();}
+function onCuotasInput(v){
+  let n=parseInt(v)||0;
+  const max=activeEtapa?REGLAS[activeEtapa].maxCuotas:60;
+  if(n>max){n=max; const ci=document.getElementById('cuotas-input'); if(ci)ci.value=max;}
+  ST.cuotas=n; updateCalc();
+}
 
 function updateCalc(){
   if(!activeEtapa) return;
@@ -489,23 +494,22 @@ function updateCalc(){
   const cuota=ST.cuotas>0&&saldo>0?saldo/ST.cuotas:0;
   const g=id=>document.getElementById(id);
 
-  // tag inicial
+  // tag inicial — inicial 0 válida (financia precio − bono)
   const tag=g('ini-tag');
   if(tag){
-    if(ini===0){tag.style.display='none';}
-    else if(ini<regla.iniMin){
-      tag.style.display='';tag.className='ini-tag warn';
-      tag.textContent=`⚠️ Inicial mínima: S/ ${fmtInt(regla.iniMin)}`;
+    if(ini===0){
+      tag.style.display='';tag.className='ini-tag ok';
+      tag.textContent=`✅ Sin inicial · financia precio − bono`;
     } else {
       tag.style.display='';tag.className='ini-tag ok';
       tag.textContent=`✅ Inicial válida`;
     }
   }
 
-  // fraccionar
+  // fraccionar — solo si hay inicial > 0
   const fw=g('frac-wrap');
   if(fw){
-    if(ini>=regla.iniMin){
+    if(ini>0){
       fw.style.display='';
       for(let n=1;n<=3;n++){
         const b=g(`fb-${n}`);
@@ -522,18 +526,16 @@ function updateCalc(){
     } else fw.style.display='none';
   }
 
-  // saldo (precio - bono - inicial)
+  // saldo (precio - bono - inicial) — siempre visible
   const sb=g('saldo-bar');
   if(sb){
-    if(ini>=regla.iniMin){
-      sb.style.display='flex';
-      const sv=sb.querySelector('.sv');if(sv)sv.textContent=`S/ ${fmt(saldo)}`;
-    } else sb.style.display='none';
+    sb.style.display='flex';
+    const sv=sb.querySelector('.sv');if(sv)sv.textContent=`S/ ${fmt(saldo)}`;
   }
 
-  // plan
+  // plan — visible siempre que haya saldo (inicial 0 permitida)
   const pw=g('plan-wrap'),av=g('plan-aviso');
-  if(ini>=regla.iniMin&&saldo>0){
+  if(saldo>0){
     if(pw)pw.style.display='';if(av)av.style.display='none';
     const ci=g('cuotas-input');if(ci)ci.max=regla.maxCuotas;
     const ch=g('cuotas-hint');if(ch)ch.textContent=`máx. ${regla.maxCuotas}`;
@@ -541,12 +543,11 @@ function updateCalc(){
     const cs=g('cuota-sub');
     if(cs) cs.textContent=ST.cuotas>0?`${ST.cuotas} cuotas sin interés`:'Ingresa número de cuotas';
     const tc=g('total-info');
-    if(tc) tc.textContent=`Total financiamiento: ${ST.cuotas} meses (máx. ${regla.maxCuotas})`;
+    if(tc) tc.textContent=`Total financiamiento: ${ST.cuotas} meses (máx. ${regla.maxCuotas}, sin interés)`;
   } else {
     if(pw)pw.style.display='none';
     if(av){
-      if(ini>0&&ini<regla.iniMin){av.style.display='';av.textContent=`⚠️ La inicial mínima es S/ ${fmtInt(regla.iniMin)}`;}
-      else av.style.display='none';
+      av.style.display='none';
     }
   }
 
@@ -561,7 +562,7 @@ function updateCalc(){
           <div class="ref-monto">S/ ${fmtInt(saldo/m)}<span style="font-size:8px;color:#aaa;">/mes</span></div>
         </div>`).join('');
     } else {
-      rg.innerHTML=`<div style="grid-column:1/-1;text-align:center;font-size:11px;color:#aaa;padding:8px;">Ingresa una inicial válida para ver la referencia de cuotas</div>`;
+      rg.innerHTML=`<div style="grid-column:1/-1;text-align:center;font-size:11px;color:#aaa;padding:8px;">El saldo ya está cubierto por el bono. No requiere financiamiento.</div>`;
     }
   }
 }
@@ -624,12 +625,12 @@ function renderCard(){
         <div class="fin-title">Estructura de Pago</div>
 
         <div class="ini-section">
-          <div class="ini-top-label">💰 Cuota Inicial</div>
+          <div class="ini-top-label">💰 Cuota Inicial <span style="font-weight:400;font-size:10px;color:#888;">(opcional · puede ser S/ 0)</span></div>
           <div class="ini-row">
             <div class="ini-input-wrap">
               <span class="ini-sym">S/</span>
               <input type="number" id="ini-field" value="" min="0" step="1"
-                oninput="onInicialInput(this.value)" placeholder="Mínimo S/ ${fmtInt(regla.iniMin)}"/>
+                oninput="onInicialInput(this.value)" placeholder="0 (sin inicial) o ingresa un monto"/>
             </div>
             <div id="ini-pct" class="pct-pill pct-neutral">—</div>
           </div>
@@ -721,9 +722,11 @@ function exportPDF(){
   const vendedorRaw=document.getElementById('vendedor-select').value;
   const [vendNombre='',vendDNI='',vendCel=''] = vendedorRaw?vendedorRaw.split('|'):[];
 
-  const cuotaIniStr=ST.fracCuotas>=2
-    ?`S/ ${fmt(ini/ST.fracCuotas)} &times; ${ST.fracCuotas} cuotas`
-    :`S/ ${fmt(ini)} <span style="font-size:10px;color:#888;">(pago único)</span>`;
+  const cuotaIniStr=ini===0
+    ?`S/ 0.00 <span style="font-size:10px;color:#888;">(sin inicial)</span>`
+    :(ST.fracCuotas>=2
+      ?`S/ ${fmt(ini/ST.fracCuotas)} &times; ${ST.fracCuotas} cuotas`
+      :`S/ ${fmt(ini)} <span style="font-size:10px;color:#888;">(pago único)</span>`);
 
   const astHtml=esFin?`
     <div style="background:#fff3e0;border:1px solid #ffcc80;border-radius:7px;padding:7px 12px;
@@ -732,7 +735,7 @@ function exportPDF(){
       Los precios podrían variar a partir del 1° del mes siguiente.
     </div>`:'';
 
-  const pagosHtml=ini>=regla.iniMin?`
+  const pagosHtml=saldo>0?`
     <div class="sec">Estructura de Pago</div>
     <div style="background:#f5f5f5;border-radius:6px;padding:6px 10px;
       display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
